@@ -1,4 +1,4 @@
-﻿FROM microsoft/iis:TP5
+﻿FROM microsoft/iis
 
 SHELL ["powershell"]
 
