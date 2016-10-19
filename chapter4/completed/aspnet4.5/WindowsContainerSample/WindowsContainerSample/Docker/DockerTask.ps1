@@ -33,8 +33,8 @@
 [String]$Username= "learningwsc",
 
 [ValidateNotNullOrEmpty()]
-#DockerHub Password
-[String]$Password = "Password@123" 
+#DockerHub Password, Replace **** with your password
+[String]$Password = "***********" 
 )
 
 $ErrorActionPreference = "Stop"
