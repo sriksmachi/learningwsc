@@ -1,4 +1,4 @@
-﻿from microsoft/windowsservercore:TP5
+﻿from microsoft/windowsservercore
 
 COPY ./Docker /Windows/Temp/Setups
 
