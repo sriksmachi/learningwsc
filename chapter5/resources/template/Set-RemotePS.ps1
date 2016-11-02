@@ -29,53 +29,28 @@
              
             [parameter(Mandatory=$true)]
             [String]
-            $ResourceGroupName,      
- 
+            $ResourceGroupName,    
+			  
+			[parameter(Mandatory=$true)]
+            [String]
+            $storageaccountname,
+			   
             [parameter()]
             [String]
             $DNSName = $env:COMPUTERNAME,
               
             [parameter()]
             [String]
-            $SourceAddressPrefix = "*"
+            $SourceAddressPrefix = "*"			
  
           ) 
  
 # define a temporary file in the users TEMP directory
-$file = $env:TEMP + "\ConfigureWinRM_HTTPS.ps1"
-  
-#Create the file containing the PowerShell
- 
-{
-   
-# POWERSHELL TO EXECUTE ON REMOTE SERVER BEGINS HERE
- 
-param($DNSName)
- 
-# Ensure PS remoting is enabled, although this is enabled by default for Azure VMs
-Enable-PSRemoting -Force
-  
-# Create rule in Windows Firewall
-New-NetFirewallRule -Name "WinRM HTTPS" -DisplayName "WinRM HTTPS" -Enabled True -Profile Any -Action Allow -Direction Inbound -LocalPort 5986 -Protocol TCP
-  
-# Create Self Signed certificate and store thumbprint
-$thumbprint = (New-SelfSignedCertificate -DnsName $DNSName -CertStoreLocation Cert:\LocalMachine\My).Thumbprint
-  
-# Run WinRM configuration on command line. DNS name set to computer hostname, you may wish to use a FQDN
-$cmd = "winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname=""$DNSName""; CertificateThumbprint=""$thumbprint""}"
-cmd.exe /C $cmd
-  
-# POWERSHELL TO EXECUTE ON REMOTE SERVER ENDS HERE
-  
-}  | out-file $file -force
- 
+$file = "$PSScriptRoot\ConfigureWinRM_HTTPS.ps1"
   
 # Get the VM we need to configure
 $vm = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName
  
-# Get storage account name
-$storageaccountname = "wschoststagingrgdiag"
-  
 # get storage account key
 $key = (Get-AzureRmStorageAccountKey -Name $storageaccountname -ResourceGroupName $ResourceGroupName)[0].Value
   
@@ -83,7 +58,7 @@ $key = (Get-AzureRmStorageAccountKey -Name $storageaccountname -ResourceGroupNam
 $storagecontext = New-AzureStorageContext -StorageAccountName $storageaccountname -StorageAccountKey $key
   
 # create a container called scripts
-New-AzureStorageContainer -Name "scripts" -Context $storagecontext
+New-AzureStorageContainer -Name "scripts" -Context $storagecontext -ErrorAction SilentlyContinue
   
 #upload the file
 Set-AzureStorageBlobContent -Container "scripts" -File $file -Blob "ConfigureWinRM_HTTPS.ps1" -Context $storagecontext -force
@@ -98,7 +73,7 @@ $nic = Get-AzureRmNetworkInterface -ResourceGroupName $ResourceGroupName -Name (
 $nsg = Get-AzureRmNetworkSecurityGroup  -ResourceGroupName $ResourceGroupName  -Name (Get-AzureRmResource -ResourceId $nic.NetworkSecurityGroup.Id).Name 
   
 # Add the new NSG rule, and update the NSG
-$nsg | Add-AzureRmNetworkSecurityRuleConfig -Name "WinRM_HTTPS" -Priority 1100 -Protocol TCP -Access Allow -SourceAddressPrefix $SourceAddressPrefix -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 5986 -Direction Inbound   | Set-AzureRmNetworkSecurityGroup
+$nsg | Add-AzureRmNetworkSecurityRuleConfig -Name "WinRM_HTTPS" -Priority 1101 -Protocol TCP -Access Allow -SourceAddressPrefix $SourceAddressPrefix -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 5986 -Direction Inbound   | Set-AzureRmNetworkSecurityGroup
  
 # get the NIC public IP
 $ip = Get-AzureRmPublicIpAddress -ResourceGroupName $ResourceGroupName -Name (Get-AzureRmResource -ResourceId $nic.IpConfigurations[0].PublicIpAddress.Id).ResourceName 
@@ -109,4 +84,4 @@ Write-Host "Enter-PSSession -ComputerName " $ip.IpAddress  " -Credential <admin_
  
 }
 
-Configure-AzureWinRMHTTPS -VMName "wschoststaging" -ResourceGroupName "wschost-staging-rg" 
+Configure-AzureWinRMHTTPS -VMName "wschoststaging" -ResourceGroupName "wschost-staging-rg" -storageaccountname "wschoststagingrgdiag"
