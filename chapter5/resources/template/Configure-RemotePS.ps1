@@ -1,4 +1,10 @@
-﻿function Configure-AzureWinRMHTTPS {
+﻿param(
+[String][parameter(Mandatory=$true)]$VMName,
+[String][parameter(Mandatory=$true)]$ResourceGroupName,
+[String][parameter(Mandatory=$true)]$StorageAccountName
+)
+
+  function Configure-AzureWinRMHTTPS {
   <#
   .SYNOPSIS
   Configure WinRM over HTTPS inside an Azure VM.
@@ -22,7 +28,7 @@
  
    
   Param
-          (
+  (
             [parameter(Mandatory=$true)]
             [String]
             $VMName,
@@ -83,5 +89,6 @@ Write-Host "To connect to the VM using the IP address while bypassing certificat
 Write-Host "Enter-PSSession -ComputerName " $ip.IpAddress  " -Credential <admin_username> -UseSSL -SessionOption (New-PsSessionOption -SkipCACheck -SkipCNCheck)" -ForegroundColor Green
  
 }
+        
+  Configure-AzureWinRMHTTPS -VMName $VMName -ResourceGroupName $ResourceGroupName -storageaccountname $StorageAccountName
 
-Configure-AzureWinRMHTTPS -VMName "wschoststaging" -ResourceGroupName "wschost-staging-rg" -storageaccountname "wschoststagingrgdiag"

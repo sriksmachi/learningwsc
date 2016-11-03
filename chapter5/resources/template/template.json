@@ -219,7 +219,7 @@
                             "priority": 101,
                             "sourceAddressPrefix": "*",
                             "protocol": "*",
-                            "destinationPortRange": "2376",
+                            "destinationPortRange": "2375",
                             "access": "Allow",
                             "direction": "Inbound",
                             "sourcePortRange": "*",
