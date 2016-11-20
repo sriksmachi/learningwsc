@@ -50,7 +50,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.AlbumArtUrl, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.AlbumArtUrl)
+                <input type="file" name="albumarturl" />
                 @Html.ValidationMessageFor(model => model.AlbumArtUrl)
             </div>
         </div>

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MusicStore.Models;
 using MusicStore.ViewModels;
+using System.IO;
 
 namespace MusicStore.Areas.Admin.Controllers
 {
@@ -98,19 +99,29 @@ namespace MusicStore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                //upload file to volume 
+                var uploads = Path.Combine(_appSettings.StorageLocation);
+                var file = Request.Form.Files.Count > 0 ? Request.Form.Files[0] : null;
+                if (file != null)
+                {
+                    var fileName = file.FileName.Substring(file.FileName.LastIndexOf(@"\") + 1,
+                                   file.FileName.Length - file.FileName.LastIndexOf(@"\") - 1);
+                    using (var fileStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+                    album.AlbumArtUrl = Path.Combine(uploads, fileName);
+                }
                 DbContext.Albums.Add(album);
                 await DbContext.SaveChangesAsync(requestAborted);
-
                 var albumData = new AlbumData
                 {
                     Title = album.Title,
                     Url = Url.Action("Details", "Store", new { id = album.AlbumId })
                 };
-
                 cache.Remove("latestAlbum");
                 return RedirectToAction("Index");
             }
-
             ViewBag.GenreId = new SelectList(DbContext.Genres, "GenreId", "Name", album.GenreId);
             ViewBag.ArtistId = new SelectList(DbContext.Artists, "ArtistId", "Name", album.ArtistId);
             return View(album);

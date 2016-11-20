@@ -2,7 +2,7 @@
   "AppSettings": {
     "SiteTitle": "Music Store",
     "CacheDbResults": true,
-    "StorageLocation": "c:\\temp\\uploads"
+    "StorageLocation": "c:\\musicstoreimages\\"
   },
   "DefaultAdminUsername": "Administrator@test.com",
   "DefaultAdminPassword": "YouShouldChangeThisPassword1!",

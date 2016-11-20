@@ -40,7 +40,6 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     @await Component.InvokeAsync("GenreMenu")
                     @await Component.InvokeAsync("CartSummary")
-                    <li><a asp-area="" asp-controller="Home" asp-action="Create">Create</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -49,6 +48,9 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
+        <footer class="navbar navbar-fixed-bottom navbar-default text-center">
+            <small>@Html.ActionLink("admin", "Index", "StoreManager", new { area = "Admin" })</small>
+        </footer>
     </div>
     <environment names="Development,NtlmAuthentication,OpenIdConnect,SocialTesting">
         <script src="~/Scripts/bootstrap.js"></script>
