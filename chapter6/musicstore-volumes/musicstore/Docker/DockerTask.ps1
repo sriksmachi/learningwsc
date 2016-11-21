@@ -63,9 +63,10 @@ function Run()
             Write-Host "Stopping conflicting containers using port $HostPort"
             docker stop $conflictingContainerIds 
     }
-
+	#Create Docker Volume
+	docker volume create musicstoreimages
 	#Creates a Music Store Container
-	docker run -v d:\temp\uploads -p $HostPort`:$ContainerPort $ImageName`:$Version dotnet musicstore.dll
+	docker run -v d:\temp\uploads -p $HostPort`:$ContainerPort -v c:\programdata\docker\volumes\musicstoreimages:c:\app\wwwroot\Images\albums $ImageName`:$Version dotnet musicstore.dll
 }
 
 function Clean(){
