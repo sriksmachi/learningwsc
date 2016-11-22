@@ -46,7 +46,7 @@ $ErrorActionPreference = "Stop"
 function Build(){
 
 	#Publish music store to folder
-	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter6/musicstore/musicstore/publishoutput --no-build
+	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter6/musicstore-sqlserver/musicstore/publishoutput --no-build
 	
 	#Build Docker Image
 	docker build -t $ImageName`:$Version -f ./Docker/Dockerfile . 
@@ -66,7 +66,7 @@ function Run()
 	#Create Docker Volume
 	docker volume create musicstoreimages
 	#Creates a Music Store Container
-	docker run -v d:\temp\uploads -p $HostPort`:$ContainerPort -v c:\programdata\docker\volumes\musicstoreimages:c:\app\wwwroot\Images\albums $ImageName`:$Version dotnet musicstore.dll
+	docker run -p $HostPort`:$ContainerPort -v c:\programdata\docker\volumes\musicstoreimages:c:\app\wwwroot\Images\albums $ImageName`:$Version dotnet musicstore.dll
 }
 
 function Clean(){

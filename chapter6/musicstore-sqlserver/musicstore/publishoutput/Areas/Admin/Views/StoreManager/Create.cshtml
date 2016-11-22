@@ -6,7 +6,7 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
@@ -50,7 +50,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.AlbumArtUrl, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.AlbumArtUrl)
+                <input type="file" name="albumarturl" />
                 @Html.ValidationMessageFor(model => model.AlbumArtUrl)
             </div>
         </div>
