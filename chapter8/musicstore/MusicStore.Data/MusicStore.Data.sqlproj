@@ -70,4 +70,7 @@
     <Build Include="dbo\Tables\CartItems.sql" />
     <Build Include="dbo\Tables\OrderDetails.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MusicStore.Data.publish.xml" />
+  </ItemGroup>
 </Project>

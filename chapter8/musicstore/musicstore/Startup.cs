@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MusicStore.Models;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace MusicStore
 {
@@ -17,7 +21,7 @@ namespace MusicStore
             // can be overridden by a different setting while deployed remotely.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddJsonFile("config.json")
+                .AddJsonFile("config.json", optional: true, reloadOnChange: true)
                 //All environment variables in the process's context flow in as configuration values.
                 .AddEnvironmentVariables();
 
@@ -41,6 +45,7 @@ namespace MusicStore
 
             // Add MVC services to the services container
             services.AddMvc();
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             // Add session related services.
             services.AddSession();
@@ -55,6 +60,13 @@ namespace MusicStore
                         authBuilder.RequireClaim("ManageStore", "Allowed");
                     });
             });
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(Configuration["AppSettings:APIUrl"]);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            services.AddSingleton(typeof(HttpClient), client);
         }
 
         //This method is invoked when ASPNETCORE_ENVIRONMENT is 'Development' or is not defined

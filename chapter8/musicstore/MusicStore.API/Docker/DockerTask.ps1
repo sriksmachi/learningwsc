@@ -22,7 +22,7 @@ param
 
 #Container Port which maps to the Host Port
 [ValidateNotNullOrEmpty()]
-[String]$ContainerPort = 81,
+[String]$ContainerPort = 80,
 
 [ValidateNotNullOrEmpty()]
 #Project configuration Release/Debug
@@ -46,7 +46,7 @@ $ErrorActionPreference = "Stop"
 function Build(){
 
 	#Publish music store to folder
-	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter8/musicstore/publishoutput --no-build
+	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter8/musicstore/musicstore.api/publishoutput --no-build
 	
 	#Build Docker Image
 	docker build -t $ImageName`:$Version -f ./Docker/Dockerfile . 
@@ -54,19 +54,17 @@ function Build(){
 
 function Run()
 {
-	#Get Containers running on Port 80
+	#Get Containers running on Port 81
 	$conflictingContainerIds = $(docker ps -a | select-string -pattern ":$HostPort->" | foreach { Write-Output $_.Line.split()[0] })
 
-	#Stopping Containers running on Port 80
+	#Stopping Containers running on Port 81
 	if ($conflictingContainerIds) {
             $conflictingContainerIds = $conflictingContainerIds -Join ' '
             Write-Host "Stopping conflicting containers using port $HostPort"
             docker stop $conflictingContainerIds 
     }
-	#Create Docker Volume
-	docker volume create musicstoreimages
 	#Creates a Music Store Container
-	docker run -p $HostPort`:$ContainerPort -v c:\programdata\docker\volumes\musicstoreimages:c:\app\wwwroot\Images\albums $ImageName`:$Version dotnet musicstore.dll
+	docker run -p $HostPort`:$ContainerPort $ImageName`:$Version dotnet musicstore.api.dll
 }
 
 function Clean(){

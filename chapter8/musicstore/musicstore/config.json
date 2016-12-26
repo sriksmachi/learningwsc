@@ -1,7 +1,8 @@
 ﻿{
   "AppSettings": {
-    "SiteTitle": "Music Store"
+    "SiteTitle": "Music Store",
+    "APIUrl" :  "http://wsc-dev-1016.cloudapp.net:81"
   },
   "DefaultAdminUsername": "Administrator@test.com",
-  "DefaultAdminPassword": "YouShouldChangeThisPassword1!"
+  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
 }

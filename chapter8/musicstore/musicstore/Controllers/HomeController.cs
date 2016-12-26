@@ -22,22 +22,38 @@ namespace MusicStore.Controllers
     {
         private readonly AppSettings _appSettings;
         private IHostingEnvironment _environment;
+        private HttpClient _client;
 
-        public HomeController(IOptions<AppSettings> options, IHostingEnvironment environment)
+        public HomeController(IOptions<AppSettings> options, IHostingEnvironment environment, HttpClient httpClient)
         {
             _appSettings = options.Value;
             _environment = environment;
+            _client = httpClient;
         }
 
         //
-        // GET: /Home/
+        // GET: /Index/
         public async Task<IActionResult> Index()
         {
             // Get most popular albums
-            IEnumerable<Album> albums = HttpClientContext.client.GetAsync("/api/album").Result
-                                 .Content.ReadAsAsync<IEnumerable<Album>>().Result;
+            IEnumerable<Album> albums = await _client.GetAsync("/api/album").Result
+                                            .Content.ReadAsAsync<IEnumerable<Album>>();
             //try get top selling albums from API
             return View(albums);
+        }
+
+        // GET : /Details
+        public async Task<IActionResult> Details(
+           [FromServices] IMemoryCache cache,
+           int id)
+        {
+            Album album = await _client.GetAsync(string.Format("/api/album/{0}", id)).Result
+                                 .Content.ReadAsAsync<Album>();
+            if (album == null)
+            {
+                return NotFound();
+            }
+            return View(album);
         }
 
         public IActionResult Error()
