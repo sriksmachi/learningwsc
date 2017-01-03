@@ -46,7 +46,7 @@ $ErrorActionPreference = "Stop"
 function Build(){
 
 	#Publish music store to folder
-	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter6/musicstore-sqlserver/musicstore/publishoutput --no-build
+	dotnet.exe publish --framework netcoreapp1.0 --configuration $Configuration --output /learningwsc/chapter8/musicstore/musicstore/publishoutput --no-build
 	
 	#Build Docker Image
 	docker build -t $ImageName`:$Version -f ./Docker/Dockerfile . 
@@ -72,7 +72,7 @@ function Run()
 function Clean(){
 	
 	#Regex for image name
-	$ImageNameRegEx = "\b$ImageName\b"
+	$ImageNameRegEx = "\b$ImageName`:$Version\b"
 	
 	#Removes all images with name matching the ImageNameRegEx, Ex: musicstore
 	docker images | select-string -pattern $ImageNameRegEx | foreach {

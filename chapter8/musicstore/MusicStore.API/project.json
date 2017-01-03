@@ -59,8 +59,8 @@
   },
 
   "scripts": {
-    //"prepublish": [ "bower install", "dotnet bundle" ],
-    //"postcompile": [ "powershell -executionpolicy bypass ./docker/dockertask.ps1 -build -ProjectName '%project:Name%' -Configuration '%compile:Configuration%' -Version '1.0.0'" ],
-    //"precompile": [ "powershell -executionpolicy bypass ./docker/dockertask.ps1 -clean" ]
+    "prepublish": [ "bower install", "dotnet bundle" ],
+    "postcompile": [ "powershell -executionpolicy bypass ./docker/dockertask.ps1 -build -projectname '%project:name%' -configuration '%compile:configuration%' -version '1.0.0'" ],
+    "precompile": [ "powershell -executionpolicy bypass ./docker/dockertask.ps1 -clean" ]
   }
 }

@@ -63,14 +63,14 @@ function Run()
             Write-Host "Stopping conflicting containers using port $HostPort"
             docker stop $conflictingContainerIds 
     }
-	#Creates a Music Store Container
+	#Creates a Music Store API Container
 	docker run -p $HostPort`:$ContainerPort $ImageName`:$Version dotnet musicstore.api.dll
 }
 
 function Clean(){
 	
 	#Regex for image name
-	$ImageNameRegEx = "\b$ImageName\b"
+	$ImageNameRegEx = "\b$ImageName`:$Version\b"
 	
 	#Removes all images with name matching the ImageNameRegEx, Ex: musicstore
 	docker images | select-string -pattern $ImageNameRegEx | foreach {
