@@ -1,0 +1,30 @@
+﻿FROM microsoft/windowsservercore
+
+SHELL ["powershell"]
+
+RUN Add-WindowsFeature Web-Server
+
+RUN Install-WindowsFeature NET-Framework-45-ASPNET 
+
+RUN Install-WindowsFeature Web-Asp-Net45
+
+COPY ./Docker/Setups /Windows/Temp/Setups
+
+RUN C:\Windows\Temp\setups\vc_redist.x64.exe /quiet
+
+RUN C:\Windows\Temp\setups\DotNetCore.1.0.0-WindowsHosting.exe /quiet
+
+RUN C:\Windows\Temp\Setups\Install-DotNetCore.ps1 
+
+ENV ASPNETCORE_URLS http://*:80
+
+COPY ./publishoutput C:/inetpub/wwwroot
+
+RUN Remove-WebSite -Name 'Default Web Site'  
+
+RUN New-Website -Name 'musicstore' -Port 80 \  
+    -PhysicalPath 'c:\inetpub\wwwroot' -ApplicationPool '.NET v4.5'
+
+EXPOSE 80
+
+WORKDIR /inetpub/wwwroot
